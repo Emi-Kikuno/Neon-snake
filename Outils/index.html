@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>Neon Snake — Menu</title>
+<link rel="stylesheet" href="styles/main.css">
+</head>
+<body class="menu-body">
+  <main class="menu">
+    <h1>Neon Snake</h1>
+    <p>Collect bubbles that match the criteria. Avoid mistakes, beat the timer.</p>
+
+    <fieldset class="mode-picker">
+      <label><input type="radio" name="mode" value="easy"> Easy</label>
+      <label><input type="radio" name="mode" value="normal" checked> Normal</label>
+      <label><input type="radio" name="mode" value="hard"> Hard</label>
+    </fieldset>
+
+    <button id="playBtn" class="btn-primary big">Play</button>
+  </main>
+
+  <script type="module">
+    const btn = document.getElementById('playBtn');
+    btn.addEventListener('click', () => {
+      const mode = document.querySelector('input[name="mode"]:checked')?.value || 'normal';
+      location.href = `game.html?mode=${encodeURIComponent(mode)}`;
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>Neon Snake — Game</title>
+<link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+<div id="wrap">
+  <header>
+    <div class="pill">Score: <span id="scoreVal">0</span></div>
+
+    <!-- label + progress bar -->
+    <div id="progressArea">
+      <div id="criteriaLabel"></div>
+      <div id="progressWrap" aria-label="Challenge progress">
+        <div id="progressFill"></div>
+        <div id="progressLabel">0%</div>
+      </div>
+    </div>
+
+    <div class="pill">Time: <span id="timeVal">30</span>s</div>
+    <div class="header-actions">
+      <button id="closeFileBtn" class="btn-mini" title="Close this file/tab">Close File</button>
+    </div>
+  </header>
+
+  <main id="game">
+    <canvas id="c"></canvas>
+    <button id="exitBtn" aria-label="Exit game">Exit</button>
+<button id="homeBtn" class="hud-btn">Home</button>
+    <div id="toast"><div id="toastCard">Challenge</div></div>
+
+    <div id="pauseOverlay" class="overlay">
+      <div class="card">
+        <div style="font-weight:800;font-size:18px;margin-bottom:8px">Quit game?</div>
+        <div style="opacity:.8">Your progress will be lost.</div>
+        <div class="row">
+          <button class="btn btn-primary" id="resumeBtn">Resume</button>
+          <button class="btn btn-danger" id="quitBtn">Close Game</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="gameOver" class="overlay">
+      <div class="card">
+        <div id="gameOverTitle" style="font-weight:800;font-size:18px;margin-bottom:8px">Game Over</div>
+        <div id="gameOverMsg" style="opacity:.85">Score: <span id="finalScore">0</span></div>
+        <div class="row">
+          <button class="btn btn-primary" id="restartBtn">Restart</button>
+          <button class="btn btn-danger" id="goCloseBtn">Close Game</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="closed" class="overlay" style="display:none">
+      <div class="card">
+        <div style="font-weight:800;font-size:18px;margin-bottom:8px">Game closed</div>
+        <div style="opacity:.85">You can restart or close this file.</div>
+        <div class="row">
+          <button class="btn btn-primary" id="closedRestartBtn">Restart</button>
+          <button class="btn btn-danger" id="closedCloseFileBtn">Close File</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer></footer>
+</div>
+
+<!-- Entry point -->
+<script src="js/content/difficulties.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
