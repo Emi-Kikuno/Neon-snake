@@ -684,7 +684,10 @@ function update(dt){
   maintainDensity(); updateSnake(dt); checkCollisions();
 }
 function render(){
-  ctx.fillStyle='#000'; ctx.fillRect(0,0,canvas.width/DPR, canvas.height/DPR);
+ const { width: W, height: H } = canvas.getBoundingClientRect();
+ctx.fillStyle = '#000';
+ctx.fillRect(0, 0, W, H);
+
   drawSnake(false);
   for(const b of state.bubbles){ if(b.alive) drawBubble(b, state.now/1000); }
   drawSnake(true); drawFloats();
@@ -765,3 +768,4 @@ closedCloseFileBtn?.addEventListener('click', attemptCloseFile);
 ----------------------------------*/
 resetGame();
 start();
+
