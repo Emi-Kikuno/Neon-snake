@@ -396,7 +396,7 @@ function updateSnake(dt){
   const head = s.segments[0];
  const { width: W, height: H } = canvas.getBoundingClientRect();
 
-const HEAD_R = 10; // keep the whole head visible on bounce
+const HEAD_R = 18; // keep the whole head visible on bounce
 
   let desired = s.heading;
   let distToFinger = Infinity;
@@ -768,4 +768,5 @@ closedCloseFileBtn?.addEventListener('click', attemptCloseFile);
 ----------------------------------*/
 resetGame();
 start();
+
 
