@@ -143,72 +143,95 @@ const finalScore = document.getElementById('finalScore');
 const restartBtn = document.getElementById('restartBtn');
 const goCloseBtn = document.getElementById('goCloseBtn');
 
-/* -------------------------------
-   2) LAYOUT SAFETY (UI exclusion)
-----------------------------------*/
-let uiRects = [];
-function updateUIRects(){
-  uiRects = [];
-  if (!gameEl) return;
-  const g = gameEl.getBoundingClientRect();
-  const pad = 6;
-  if (exitBtn && exitBtn.offsetParent !== null){
-    const r = exitBtn.getBoundingClientRect();
-    uiRects.push({ left:r.left-g.left-pad, top:r.top-g.top-pad, right:r.right-g.left+pad, bottom:r.bottom-g.top+pad });
-  }
-}
-function circleRectEnvelopeOverlaps(cx,cy, R, rect){
-  const L=cx-R, Rr=cx+R, T=cy-R, B=cy+R;
-  return !(Rr<rect.left || L>rect.right || B<rect.top || T>rect.bottom);
-}
+diff --git a/Outils/js/game.js b/Outils/js/game.js
+index 286292f90a5cae30d899113fc5bea45548c09c1c..6254c5b766d56e51f6e543523c245bc3aa9f1ff0 100644
+--- a/Outils/js/game.js
++++ b/Outils/js/game.js
+@@ -143,65 +143,68 @@ const finalScore = document.getElementById('finalScore');
+ const restartBtn = document.getElementById('restartBtn');
+ const goCloseBtn = document.getElementById('goCloseBtn');
+ 
+ /* -------------------------------
+    2) LAYOUT SAFETY (UI exclusion)
+ ----------------------------------*/
+ let uiRects = [];
+ function updateUIRects(){
+   uiRects = [];
+   if (!gameEl) return;
+   const g = gameEl.getBoundingClientRect();
+   const pad = 6;
+   if (exitBtn && exitBtn.offsetParent !== null){
+     const r = exitBtn.getBoundingClientRect();
+     uiRects.push({ left:r.left-g.left-pad, top:r.top-g.top-pad, right:r.right-g.left+pad, bottom:r.bottom-g.top+pad });
+   }
+ }
+ function circleRectEnvelopeOverlaps(cx,cy, R, rect){
+   const L=cx-R, Rr=cx+R, T=cy-R, B=cy+R;
+   return !(Rr<rect.left || L>rect.right || B<rect.top || T>rect.bottom);
+ }
+ 
+ /* -------------------------------
+    3) CANVAS RESIZE
+ ----------------------------------*/
+-let DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+-function resizeCanvas(){
+-  // Measure the visible CSS size of the canvas, not the parent
+-  const rect = canvas.getBoundingClientRect(); // <— change here
+-  const w = Math.max(1, Math.round(rect.width  * DPR));
+-  const h = Math.max(1, Math.round(rect.height * DPR));
+-  if (canvas.width !== w || canvas.height !== h){
+-    canvas.width  = w;
+-    canvas.height = h;
+-    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);   // keep drawing coords in CSS px
+-  }
+-  updateUIRects();
+-}
+-window.addEventListener('resize', ()=>{ resizeCanvas(); computeTargetBubbles(); });
+-resizeCanvas();
++let DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
++function resizeCanvas(){
++  // Measure the visible area of the game container, not the canvas element
++  const rect = gameEl ? gameEl.getBoundingClientRect() : { width: window.innerWidth, height: window.innerHeight };
++  const w = Math.max(1, Math.round(rect.width  * DPR));
++  const h = Math.max(1, Math.round(rect.height * DPR));
++  if (canvas.width !== w || canvas.height !== h){
++    canvas.width  = w;
++    canvas.height = h;
++    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);   // keep drawing coords in CSS px
++  }
++  updateUIRects();
++}
++window.addEventListener('resize', ()=>{ resizeCanvas(); computeTargetBubbles(); });
++window.addEventListener('orientationchange', ()=>{ resizeCanvas(); computeTargetBubbles(); });
++window.addEventListener('DOMContentLoaded', resizeCanvas);
++window.addEventListener('load', resizeCanvas);
++resizeCanvas();
+ 
+ /* -------------------------------
+    4) UTILS & CONSTANTS
+ ----------------------------------*/
+ const RNG = { range:(a,b)=>a+Math.random()*(b-a), pick:a=>a[Math.floor(Math.random()*a.length)] };
+ const Size   = { SMALL:'small', MEDIUM:'medium', LARGE:'large' };
+ const Color  = { BLUE:'blue', PINK:'pink', YELLOW:'yellow', GREEN:'green', RED:'red' };
+ const Symbol = { CIRCLE:'circle', TRIANGLE:'triangle', SQUARE:'square' };
+ const NEON = {
+   [Color.BLUE]:  getComputedStyle(document.documentElement).getPropertyValue('--neon-blue').trim()||'#2dd4ff',
+   [Color.PINK]:  getComputedStyle(document.documentElement).getPropertyValue('--neon-pink').trim()||'#ff5bd6',
+   [Color.YELLOW]:getComputedStyle(document.documentElement).getPropertyValue('--neon-yellow').trim()||'#ffe55b',
+   [Color.GREEN]: getComputedStyle(document.documentElement).getPropertyValue('--neon-green').trim()||'#5bffa3',
+   [Color.RED]:   getComputedStyle(document.documentElement).getPropertyValue('--neon-red').trim()||'#ff5b6e',
+ };
+ function clamp(v,min,max){ return Math.max(min, Math.min(max,v)); }
+ function dist(ax,ay,bx,by){ const dx=ax-bx, dy=ay-by; return Math.hypot(dx,dy); }
+ function normalize(vx,vy){ const L=Math.hypot(vx,vy)||1; return {x:vx/L, y:vy/L}; }
+ function angleOf(vx,vy){ return Math.atan2(vy, vx); }
+ function rot(vx,vy,ang){ const c=Math.cos(ang), s=Math.sin(ang); return {x:vx*c - vy*s, y:vy*c + vx*s}; }
+ function shortestAngle(a,b){ let d=b-a; while(d> Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI; return d; }
+ function lerp(a,b,t){ return a + (b-a)*t; }
+ function easeOutCubic(t){ return 1 - Math.pow(1-t, 3); }
+ function ramp01(index, rampCount){ const t = clamp(index / rampCount, 0, 1); return easeOutCubic(t); }
+ function radiusFor(size){
 
-/* -------------------------------
-   3) CANVAS RESIZE
-----------------------------------*/
-let DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-function resizeCanvas(){
-  // Measure the visible CSS size of the canvas, not the parent
-  const rect = canvas.getBoundingClientRect(); // <— change here
-  const w = Math.max(1, Math.round(rect.width  * DPR));
-  const h = Math.max(1, Math.round(rect.height * DPR));
-  if (canvas.width !== w || canvas.height !== h){
-    canvas.width  = w;
-    canvas.height = h;
-    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);   // keep drawing coords in CSS px
-  }
-  updateUIRects();
-}
-window.addEventListener('resize', ()=>{ resizeCanvas(); computeTargetBubbles(); });
-resizeCanvas();
-
-/* -------------------------------
-   4) UTILS & CONSTANTS
-----------------------------------*/
-const RNG = { range:(a,b)=>a+Math.random()*(b-a), pick:a=>a[Math.floor(Math.random()*a.length)] };
-const Size   = { SMALL:'small', MEDIUM:'medium', LARGE:'large' };
-const Color  = { BLUE:'blue', PINK:'pink', YELLOW:'yellow', GREEN:'green', RED:'red' };
-const Symbol = { CIRCLE:'circle', TRIANGLE:'triangle', SQUARE:'square' };
-const NEON = {
-  [Color.BLUE]:  getComputedStyle(document.documentElement).getPropertyValue('--neon-blue').trim()||'#2dd4ff',
-  [Color.PINK]:  getComputedStyle(document.documentElement).getPropertyValue('--neon-pink').trim()||'#ff5bd6',
-  [Color.YELLOW]:getComputedStyle(document.documentElement).getPropertyValue('--neon-yellow').trim()||'#ffe55b',
-  [Color.GREEN]: getComputedStyle(document.documentElement).getPropertyValue('--neon-green').trim()||'#5bffa3',
-  [Color.RED]:   getComputedStyle(document.documentElement).getPropertyValue('--neon-red').trim()||'#ff5b6e',
-};
-function clamp(v,min,max){ return Math.max(min, Math.min(max,v)); }
-function dist(ax,ay,bx,by){ const dx=ax-bx, dy=ay-by; return Math.hypot(dx,dy); }
-function normalize(vx,vy){ const L=Math.hypot(vx,vy)||1; return {x:vx/L, y:vy/L}; }
-function angleOf(vx,vy){ return Math.atan2(vy, vx); }
-function rot(vx,vy,ang){ const c=Math.cos(ang), s=Math.sin(ang); return {x:vx*c - vy*s, y:vy*c + vx*s}; }
-function shortestAngle(a,b){ let d=b-a; while(d> Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI; return d; }
-function lerp(a,b,t){ return a + (b-a)*t; }
-function easeOutCubic(t){ return 1 - Math.pow(1-t, 3); }
-function ramp01(index, rampCount){ const t = clamp(index / rampCount, 0, 1); return easeOutCubic(t); }
-function radiusFor(size){
-  const base = Math.min(canvas.width/DPR, canvas.height/DPR);
-  const scale = base <= 500 ? 0.8 : base <= 900 ? 1 : 1.2;
-  return size===Size.SMALL ? 10*scale : size===Size.MEDIUM ? 16*scale : 23*scale;
-}
 
 /* -------------------------------
    5) GAME STATE
@@ -789,6 +812,7 @@ closedCloseFileBtn?.addEventListener('click', attemptCloseFile);
 ----------------------------------*/
 resetGame();
 start();
+
 
 
 
