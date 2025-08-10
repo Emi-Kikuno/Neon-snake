@@ -465,8 +465,19 @@ if (head.y < HEAD_R) {
 /* Input */
 function setDrag(x,y){ state.snake.dragTarget = {x,y}; }
 function clearDrag(){ state.snake.dragTarget = null; }
-gameEl.addEventListener('pointerdown', (e)=>{ if(e.button===0){ state.snake.pointerDown = true; setDrag(e.offsetX, e.offsetY); }});
-gameEl.addEventListener('pointermove', (e)=>{ if (state.snake.pointerDown || e.buttons===1 || e.pressure>0) { setDrag(e.offsetX, e.offsetY); }});
+gameEl.addEventListener('pointerdown', (e)=>{
+  if(e.button===0){
+    state.snake.pointerDown = true;
+    setDrag(e.offsetX, e.offsetY); // ❌ offsetX/Y can be wrong on mobile
+  }
+});
+
+gameEl.addEventListener('pointermove', (e)=>{
+  if (state.snake.pointerDown || e.buttons===1 || e.pressure>0) {
+    setDrag(e.offsetX, e.offsetY); // ❌
+  }
+});
+
 window.addEventListener('pointerup',   ()=>{ state.snake.pointerDown = false; clearDrag(); });
 
 /* -------------------------------
@@ -768,5 +779,6 @@ closedCloseFileBtn?.addEventListener('click', attemptCloseFile);
 ----------------------------------*/
 resetGame();
 start();
+
 
 
