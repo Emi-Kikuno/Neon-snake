@@ -167,10 +167,15 @@ function circleRectEnvelopeOverlaps(cx,cy, R, rect){
 ----------------------------------*/
 let DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
 function resizeCanvas(){
-  const rect = canvas.parentElement.getBoundingClientRect();
-  canvas.width  = Math.floor(rect.width * DPR);
-  canvas.height = Math.floor(rect.height * DPR);
-  ctx.setTransform(DPR,0,0,DPR,0,0);
+  // Measure the visible CSS size of the canvas, not the parent
+  const rect = canvas.getBoundingClientRect(); // <— change here
+  const w = Math.max(1, Math.round(rect.width  * DPR));
+  const h = Math.max(1, Math.round(rect.height * DPR));
+  if (canvas.width !== w || canvas.height !== h){
+    canvas.width  = w;
+    canvas.height = h;
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);   // keep drawing coords in CSS px
+  }
   updateUIRects();
 }
 window.addEventListener('resize', ()=>{ resizeCanvas(); computeTargetBubbles(); });
@@ -779,6 +784,7 @@ closedCloseFileBtn?.addEventListener('click', attemptCloseFile);
 ----------------------------------*/
 resetGame();
 start();
+
 
 
 
