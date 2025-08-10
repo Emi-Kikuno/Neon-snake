@@ -703,7 +703,12 @@ function render(){
  const { width: W, height: H } = canvas.getBoundingClientRect();
 ctx.fillStyle = '#000';
 ctx.fillRect(0, 0, W, H);
-
+   
+ctx.save();
+ctx.strokeStyle = '#ff00ff';
+ctx.lineWidth = 1;
+ctx.strokeRect(0.5, 0.5, W-1, H-1);
+ctx.restore();
   drawSnake(false);
   for(const b of state.bubbles){ if(b.alive) drawBubble(b, state.now/1000); }
   drawSnake(true); drawFloats();
@@ -784,6 +789,7 @@ closedCloseFileBtn?.addEventListener('click', attemptCloseFile);
 ----------------------------------*/
 resetGame();
 start();
+
 
 
 
